@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Shoping Page";
+}
+<h1>
+    @ViewData["Title"]
+</h1>
+<nav id="filter">
+    <ul id="lstCategory">
+        Loading...
+    </ul>
+</nav>
+<div id="contentShop">
+    Loading...
+</div>
+<script>
+
+
+    /**
+     * Отображение ошибки для пользователя
+     */
+    function renderError(err) {
+        console.log(err)
+    }
+    let lstCategory = document.getElementById("lstCategory")
+    function getCategories() {
+        fetch('/api /Categories').then(res => { return res.json })
+            .then(data => {
+                console.log(data)
+                renderCategories(data)
+                //for (const category of data.categories) {
+                //    /*let li = document.createElement('li')*/
+                //    lstCategory.appendChild(
+                //        document.createElement('strong'))
+                //        .textContent = category.name
+                //}
+            })
+            .catch(error => { console.log(error) })
+
+    }
+    function renderCategories(categories) {
+        lstCategory.innerHTML = ""
+        categories.map(category => {
+            let li = document.createElement('li')
+            li.dataset.category_id = category.id
+            li.innerText = category.name
+            /*li.onclick = getSearchProduct*/
+
+            lstCategory.appendChild(li)
+        })
+    }
+    
+    getCategories()
+</script>
+
+
