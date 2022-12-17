@@ -19,7 +19,8 @@ namespace ClothingStore.Data
         public DbSet<Sale> Sales { get; set; }
         public DbSet<Sex> Sexes  { get; set; }
         public DbSet<Status> Statuses { get; set; }
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public DbSet<Vendor> Vendors { get; set; }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }

@@ -22,7 +22,7 @@ namespace ClothingStore.Controllers.Home
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Color).Include(p => p.Sex).Include(p => p.Size);
+            var applicationDbContext = _context.Products.Include(p => p.Category).Include(p => p.Color).Include(p => p.Sex).Include(p => p.Size).Include(p => p.Vendor);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -39,6 +39,7 @@ namespace ClothingStore.Controllers.Home
                 .Include(p => p.Color)
                 .Include(p => p.Sex)
                 .Include(p => p.Size)
+                .Include(p => p.Vendor)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -55,6 +56,7 @@ namespace ClothingStore.Controllers.Home
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "Name");
             ViewData["SexId"] = new SelectList(_context.Sexes, "Id", "Name");
             ViewData["SizeId"] = new SelectList(_context.Sizes, "Id", "Name");
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name");
             return View();
         }
 
@@ -63,7 +65,7 @@ namespace ClothingStore.Controllers.Home
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price,ColorId,CategoryId,SizeId,SexId,Quantity")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Price,ColorId,CategoryId,SizeId,SexId,VendorId,Quantity")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -75,6 +77,7 @@ namespace ClothingStore.Controllers.Home
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "Name", product.ColorId);
             ViewData["SexId"] = new SelectList(_context.Sexes, "Id", "Name", product.SexId);
             ViewData["SizeId"] = new SelectList(_context.Sizes, "Id", "Name", product.SizeId);
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name", product.VendorId);
             return View(product);
         }
 
@@ -95,6 +98,7 @@ namespace ClothingStore.Controllers.Home
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "Name", product.ColorId);
             ViewData["SexId"] = new SelectList(_context.Sexes, "Id", "Name", product.SexId);
             ViewData["SizeId"] = new SelectList(_context.Sizes, "Id", "Name", product.SizeId);
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name", product.VendorId);
             return View(product);
         }
 
@@ -103,7 +107,7 @@ namespace ClothingStore.Controllers.Home
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ColorId,CategoryId,SizeId,SexId,Quantity")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,ColorId,CategoryId,SizeId,SexId,VendorId,Quantity")] Product product)
         {
             if (id != product.Id)
             {
@@ -134,6 +138,7 @@ namespace ClothingStore.Controllers.Home
             ViewData["ColorId"] = new SelectList(_context.Colors, "Id", "Name", product.ColorId);
             ViewData["SexId"] = new SelectList(_context.Sexes, "Id", "Name", product.SexId);
             ViewData["SizeId"] = new SelectList(_context.Sizes, "Id", "Name", product.SizeId);
+            ViewData["VendorId"] = new SelectList(_context.Vendors, "Id", "Name", product.VendorId);
             return View(product);
         }
 
@@ -150,6 +155,7 @@ namespace ClothingStore.Controllers.Home
                 .Include(p => p.Color)
                 .Include(p => p.Sex)
                 .Include(p => p.Size)
+                .Include(p => p.Vendor)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {

@@ -27,7 +27,9 @@ namespace ClothingStore.Models
         public int SexId { get; set; }
         public List<Review> reviews { get; set; }
         public Like Like { get; set; }
-        
+        public Vendor Vendor { get; set; }
+        [Required]
+        public int VendorId { get; set; }
         public List<Status> statuses{ get; set; }
         public int Quantity { get; set; }
         
