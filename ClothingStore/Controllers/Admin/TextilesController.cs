@@ -8,24 +8,24 @@ using Microsoft.EntityFrameworkCore;
 using ClothingStore.Data;
 using ClothingStore.Models;
 
-namespace ClothingStore.Controllers
+namespace ClothingStore.Controllers.Home
 {
-    public class ColorsController : Controller
+    public class TextilesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public ColorsController(ApplicationDbContext context)
+        public TextilesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Colors
+        // GET: Textiles
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Colors.ToListAsync());
+            return View(await _context.Textile.ToListAsync());
         }
 
-        // GET: Colors/Details/5
+        // GET: Textiles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,39 +33,39 @@ namespace ClothingStore.Controllers
                 return NotFound();
             }
 
-            var color = await _context.Colors
+            var textile = await _context.Textile
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (color == null)
+            if (textile == null)
             {
                 return NotFound();
             }
 
-            return View(color);
+            return View(textile);
         }
 
-        // GET: Colors/Create
+        // GET: Textiles/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Colors/Create
+        // POST: Textiles/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Color color)
+        public async Task<IActionResult> Create([Bind("Id,Name")] Textile textile)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(color);
+                _context.Add(textile);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(color);
+            return View(textile);
         }
 
-        // GET: Colors/Edit/5
+        // GET: Textiles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,22 +73,22 @@ namespace ClothingStore.Controllers
                 return NotFound();
             }
 
-            var color = await _context.Colors.FindAsync(id);
-            if (color == null)
+            var textile = await _context.Textile.FindAsync(id);
+            if (textile == null)
             {
                 return NotFound();
             }
-            return View(color);
+            return View(textile);
         }
 
-        // POST: Colors/Edit/5
+        // POST: Textiles/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Color color)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Textile textile)
         {
-            if (id != color.Id)
+            if (id != textile.Id)
             {
                 return NotFound();
             }
@@ -97,12 +97,12 @@ namespace ClothingStore.Controllers
             {
                 try
                 {
-                    _context.Update(color);
+                    _context.Update(textile);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ColorExists(color.Id))
+                    if (!TextileExists(textile.Id))
                     {
                         return NotFound();
                     }
@@ -113,10 +113,10 @@ namespace ClothingStore.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(color);
+            return View(textile);
         }
 
-        // GET: Colors/Delete/5
+        // GET: Textiles/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,30 +124,30 @@ namespace ClothingStore.Controllers
                 return NotFound();
             }
 
-            var color = await _context.Colors
+            var textile = await _context.Textile
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (color == null)
+            if (textile == null)
             {
                 return NotFound();
             }
 
-            return View(color);
+            return View(textile);
         }
 
-        // POST: Colors/Delete/5
+        // POST: Textiles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var color = await _context.Colors.FindAsync(id);
-            _context.Colors.Remove(color);
+            var textile = await _context.Textile.FindAsync(id);
+            _context.Textile.Remove(textile);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ColorExists(int id)
+        private bool TextileExists(int id)
         {
-            return _context.Colors.Any(e => e.Id == id);
+            return _context.Textile.Any(e => e.Id == id);
         }
     }
 }

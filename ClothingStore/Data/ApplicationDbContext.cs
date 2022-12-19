@@ -24,5 +24,6 @@ namespace ClothingStore.Data
             : base(options)
         {
         }
+        public DbSet<ClothingStore.Models.Textile> Textile { get; set; }
     }
 }

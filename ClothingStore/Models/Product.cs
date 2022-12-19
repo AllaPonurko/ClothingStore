@@ -32,6 +32,9 @@ namespace ClothingStore.Models
         public int VendorId { get; set; }
         public List<Status> statuses{ get; set; }
         public int Quantity { get; set; }
-        
+        public string Img { get; set; }
+        public Textile Textile { get; set; }
+        [Required]
+        public int TextileId { get; set; }
     }
 }
