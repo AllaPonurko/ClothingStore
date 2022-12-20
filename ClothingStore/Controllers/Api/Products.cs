@@ -12,11 +12,11 @@ namespace ClothingStore.Controllers.Api
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class Products : ControllerBase
     {
         private readonly ApplicationDbContext _context;
 
-        public ProductsController(ApplicationDbContext context)
+        public Products(ApplicationDbContext context)
         {
             _context = context;
         }
