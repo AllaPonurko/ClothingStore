@@ -5,10 +5,19 @@
     @ViewData["Title"]
 </h1>
 <nav id="filter">
-    <ul id="lstCategory">
-        Loading...
-    </ul>
+    Loading...
+    <form name="lstCategory">
+        <div class="form-group col-md-5">
+            <label for="name">List of categories:</label>
+            
+        </div>
+    </form>
 </nav>
+<table class="table table-condensed table-striped  col-md-6">
+    <thead><tr><th>Id</th><th>Name</th></tr></thead>
+    <tbody>
+    </tbody>
+</table>
 <div id="contentShop">
     Loading...
 </div>
@@ -21,20 +30,51 @@
     function renderError(err) {
         console.log(err)
     }
-    let lstCategory = document.getElementById("lstCategory")
-    function getCategories() {
-        fetch('/api /Categories').then(res => { return res.json })
-            .then(data => {
-                console.log(data)
-                renderCategories(data)
+    /*let lstCategory = document.getElementById("lstCategory")*/
+    async function getCategories() {
+        const response = await fetch("/api/categories",{
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+        // если запрос прошел нормально
+        if (response.ok === true) {
+            // получаем данные
+            const categories = await response.json();
+            /*console.log(categories)*/
+            let rows = document.querySelector("tbody");
+            categories.forEach(category => {
+                // добавляем полученные элементы в таблицу
+                rows.append(row(category));
+            });
+        }
+        // создание строки для таблицы
+        function row(category) {
+
+            const tr = document.createElement("tr");
+            tr.setAttribute("data-rowid", category.id);
+
+            const idTd = document.createElement("td");
+            idTd.append(category.id);
+            tr.append(idTd);
+
+            const nameTd = document.createElement("td");
+            nameTd.append(category.name);
+            tr.append(nameTd);
+
+            return tr;
+        }
+        //fetch('/api /Categories').then(res => { return res.json })
+        //    .then(data => {
+        //        console.log(data)
+        //        renderCategories(data)
                 //for (const category of data.categories) {
                 //    /*let li = document.createElement('li')*/
                 //    lstCategory.appendChild(
                 //        document.createElement('strong'))
                 //        .textContent = category.name
                 //}
-            })
-            .catch(error => { console.log(error) })
+            /*})*/
+            /*.catch(error => { console.log(error) })*/
 
     }
     function renderCategories(categories) {
