@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ClothingStore.Data;
 using ClothingStore.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace ClothingStore.Controllers.Home
 {
@@ -67,8 +69,31 @@ namespace ClothingStore.Controllers.Home
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Price,ColorId,CategoryId,SizeId,SexId,VendorId,Quantity,Img,TextileId")] Product product)
+        public async Task<IActionResult> Create(IFormFile Img, [Bind("Id,Name,Price,ColorId,CategoryId,SizeId,SexId,VendorId,Quantity,Img,TextileId")] Product product)
         {
+            if (Img != null)
+            {
+                string urlPath = "/store/images/";
+
+                string diskPath = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, "wwwroot" + urlPath));
+                if (!Directory.Exists(diskPath))
+                {
+                    Directory.CreateDirectory(diskPath);
+                }
+
+                using (var fileStream = new FileStream(Path.Combine(diskPath, Img.FileName), FileMode.Create))
+                {
+                    await Img.CopyToAsync(fileStream);
+                }
+
+                product.Img = urlPath + Img.FileName;
+
+            }
+            else
+            {
+                return View(product);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(product);
