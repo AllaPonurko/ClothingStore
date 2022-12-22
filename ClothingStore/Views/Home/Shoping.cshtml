@@ -1,25 +1,40 @@
 ﻿@{
     ViewData["Title"] = "Shoping Page";
 }
+<style>
+    #filter{width:200px;background-color:aliceblue}
+    #shopContent {
+        margin-left: 200px;background-color:blanchedalmond;width:auto;margin-top:auto
+    }
+</style>
 <h1>
     @ViewData["Title"]
 </h1>
 <nav id="filter">
-    Loading...
     <form name="lstCategory">
         <div class="form-group col-md-5">
-            <label for="name">List of categories:</label>
-            
+            @*<label for="name">List of categories:</label>*@
+            <table class="table table-condensed table-striped  col-md-6">
+                <thead><tr><th>    </th></tr></thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </form>
 </nav>
-<table class="table table-condensed table-striped  col-md-6">
-    <thead><tr><th>Id</th><th>Name</th></tr></thead>
-    <tbody>
-    </tbody>
-</table>
-<div id="contentShop">
-    Loading...
+
+<div id="shopContent">
+    @*Loading...*@
+    <form class="lstProducts">
+        <div class="form-group col-md-7">
+            @*<label for="name">List of products:</label>*@
+            <table class="table table-condensed table-striped  col-md-8">
+                <thead><tr><th>Name</th><th>Image</th></tr></thead>
+                <tbody class="product">
+                </tbody>
+            </table>
+        </div>
+    </form>
 </div>
 <script>
 
@@ -32,7 +47,7 @@
     }
     /*let lstCategory = document.getElementById("lstCategory")*/
     async function getCategories() {
-        const response = await fetch("/api/categories",{
+        const response = await fetch("/api/categories", {
             method: "GET",
             headers: { "Accept": "application/json" }
         });
@@ -47,15 +62,16 @@
                 rows.append(row(category));
             });
         }
+    }
         // создание строки для таблицы
         function row(category) {
 
             const tr = document.createElement("tr");
-            tr.setAttribute("data-rowid", category.id);
+            //tr.setAttribute("data-rowid", category.id);
 
-            const idTd = document.createElement("td");
-            idTd.append(category.id);
-            tr.append(idTd);
+            //const idTd = document.createElement("td");
+            //idTd.append(category.id);
+            //tr.append(idTd);
 
             const nameTd = document.createElement("td");
             nameTd.append(category.name);
@@ -63,33 +79,50 @@
 
             return tr;
         }
-        //fetch('/api /Categories').then(res => { return res.json })
-        //    .then(data => {
-        //        console.log(data)
-        //        renderCategories(data)
-                //for (const category of data.categories) {
-                //    /*let li = document.createElement('li')*/
-                //    lstCategory.appendChild(
-                //        document.createElement('strong'))
-                //        .textContent = category.name
-                //}
-            /*})*/
-            /*.catch(error => { console.log(error) })*/
+        
+    /*let product = document.getElementById("product")*/
+    // Получение данных о продуктах без фильтра
+     
+    async function getProducts() {
+        
+        const response = await fetch('/api/products', {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+        // если запрос прошел нормально
+        if (response.ok === true) {
+            // получаем данные
+            const products = await response.json();
+            /*console.log(products)*/
+            let rows = document.querySelector(".product");
+            products.forEach(product => {
+                // добавляем полученные элементы в таблицу
+                rows.append(rowProduct(product));
+            });
+        }
+    }
+    let content = document.getElementById("shopContent")
+    function rowProduct(product) {
+        //content.innerHTML = ""
+        //if (products.length === 0) {
+        //    let msg = '<div class="alert alert-secondary" role = "alert" > По вашему запросу продуктов не найдено </div>'
+        //    content.innerHTML = msg
+        //    return
+        //}
+   
+        const tr = document.createElement("tr");
+        const nameTd = document.createElement("td");
+        nameTd.append(product.name);
+        tr.append(nameTd);
+
+        const imgTd = document.createElement("td");
+        imgTd.append(product.img);
+        tr.append(imgTd);
+        return tr;
 
     }
-    function renderCategories(categories) {
-        lstCategory.innerHTML = ""
-        categories.map(category => {
-            let li = document.createElement('li')
-            li.dataset.category_id = category.id
-            li.innerText = category.name
-            /*li.onclick = getSearchProduct*/
-
-            lstCategory.appendChild(li)
-        })
-    }
-    
-    getCategories()
+        getCategories()
+        getProducts()
 </script>
 
 
