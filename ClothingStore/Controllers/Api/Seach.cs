@@ -1,6 +1,7 @@
 ﻿using ClothingStore.Data;
 using ClothingStore.Data.Migrations;
 using ClothingStore.Models;
+using ClothingStore.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,14 +29,21 @@ namespace ClothingStore.Controllers.Api
              int? SizeId,
              int? VendorId
              )
-        {
-            // Service (SearchparamPresenter) -- Repository(SearchParamPresenter)
+        {// формируем список компаний для передачи в представление
+            //List<CategoryModel> categoryModels = _context.Categories
+            //    .Select(c => new CategoryModel { Id = c.Id, Name = c.Name })
+            //    .ToList();
+            //// добавляем на первое место
+            //categoryModels.Insert(0, new CategoryModel { Id = 0, Name = "Все" });
             var query = _context.Products.AsQueryable();
+            //IndexViewModel ivm = new IndexViewModel { Categories = categoryModels, Products = _context.Products.ToList() };
 
+            //// если передан id компании, фильтруем список
             if (CategoryId != null)
-            {
                 query = query.Where(p => p.Category.Id == CategoryId);
-            }
+
+            // Service (SearchparamPresenter) -- Repository(SearchParamPresenter)
+
             if (SizeId != null)
             {
                 query = query.Where(p => p.Size.Id == SizeId);

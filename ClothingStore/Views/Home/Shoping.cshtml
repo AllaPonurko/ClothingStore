@@ -33,6 +33,10 @@
             </table>
         </div>
     </form>
+    <div>
+        <h5>Seach by vendor</h5>
+        <input type="text" value=""/>
+    </div>
 </nav>
 
 <div id="shopContent">
@@ -88,7 +92,7 @@
             const nameTd = document.createElement("td");
             nameTd.append(category.name);
             tr.append(nameTd);
-
+            onclick ="getSearchProduct()" ;
             return tr;
         }
     
