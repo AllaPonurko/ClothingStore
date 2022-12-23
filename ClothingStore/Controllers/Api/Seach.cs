@@ -45,16 +45,8 @@ namespace ClothingStore.Controllers.Api
                 query = query.Where(p => p.Vendor.Id == VendorId);
             }
             // Все другие фильтры продолжаем тут
-
-
-            return await query.ToListAsync();
-
-
-            // Понять, что мы собираемся искать
-            // Произвести поиск
-            // выдать результат
-
-            //return await _context.Categories.ToListAsync();
+          return await query.ToListAsync();
+ 
         }
     }
 }
