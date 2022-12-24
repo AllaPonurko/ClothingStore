@@ -2,10 +2,9 @@
     ViewData["Title"] = "Shoping Page";
 }
 <style>
-    #filter {
-        
+    #mainMenu {
         width: 200px;
-        background-color:antiquewhite;
+        background-color: antiquewhite;
         overflow: auto;
         float: left;
         height: 100%;
@@ -22,28 +21,49 @@
 <h1>
     @ViewData["Title"]
 </h1>
-<nav id="filter">
+<nav id="mainMenu" >
     <form name="lstCategory">
         <div class="form-group col-md-5">
             @*<label for="name">List of categories:</label>*@
             <table class="table table-condensed table-striped  col-md-6">
                 <thead><tr><th>    </th></tr></thead>
-                <tbody>
+                <tbody class="category">
                 </tbody>
             </table>
         </div>
     </form>
-    <div>
-        <h5>Seach by vendor</h5>
-        <input type="text" value=""/>
+    <div id="filter" >
+        <form method="get" action="~/Api/Seach">
+            <h6>Seach by vendor</h6>
+            <p>
+                <select class="vendor" id="vendor" name="vendor">
+                    <option value="">Choose vendor</option>
+                </select>
+                @*@Html.DropDownList ("Vendor",new SelectList(getVendors()),"Choose vendor",)*@
+            </p>
+            <h6>Seach by category</h6>
+            <p>
+                <select id="category" name="category">
+                    <option value="getCategories()">Choose category</option>
+                </select>
+            </p>
+            <h6>Seach by size</h6>
+            <p>
+                <select id="category" name="category">
+                    <option value=" ">Choose size</option>
+                </select>
+            </p>
+            <input type="submit" id="btnConfirm"  value="Confirm" />
+        </form>
+        
     </div>
 </nav>
+    
+
 
 <div id="shopContent">
-    @*Loading...*@
     <form class="lstProducts">
         <div class="form-group col-md-7">
-            @*<label for="name">List of products:</label>*@
             <table class="table table-condensed table-striped  col-md-8">
                 <thead><tr><th>Name</th><th>Price</th><th>Image</th></tr></thead>
                 <tbody class="product">
@@ -54,7 +74,6 @@
 </div>
 <script>
 
-
     /**
      * Отображение ошибки для пользователя
      */
@@ -63,22 +82,44 @@
     }
     /*let lstCategory = document.getElementById("lstCategory")*/
     async function getCategories() {
-        const response = await fetch("/api/categories", {
+        const response =  await fetch("/api/categories", {
             method: "GET",
             headers: { "Accept": "application/json" }
-        });
+        });//.then(response => { return response.json })
+        //        .then(data => {
+        //            renderCategories(data)
+        //        }).catch(err => {
+        //            console.log(err)
+        //})
+
         // если запрос прошел нормально
         if (response.ok === true) {
             // получаем данные
             const categories = await response.json();
-            /*console.log(categories)*/
-            let rows = document.querySelector("tbody");
+            let rows = document.querySelector(".category");
             categories.forEach(category => {
                 // добавляем полученные элементы в таблицу
                 rows.append(row(category));
             });
         }
     }
+    
+    //function renderCategories(categories) {
+    //    lstCategory.innerHTML = ""
+    //    categories.map(category => {
+    //        let li = document.createElement('li')
+    //        li.dataset.category_id = category.id
+    //        li.innerText = category.name
+    //        li.onclick = ()=> {
+    //            category_id = event.target.dataset.category_id
+    //            getSearchProduct()
+    //        }
+
+    //        lstCategory.appendChild(li)
+    //    })
+
+    //}
+    
         // создание строки для таблицы
         function row(category) {
 
@@ -92,7 +133,11 @@
             const nameTd = document.createElement("td");
             nameTd.append(category.name);
             tr.append(nameTd);
-            onclick ="getSearchProduct()" ;
+            tr.onclick = () =>{
+                category_id = event.target.dataset.category_id
+                getSearchProduct();
+            }
+                
             return tr;
         }
     
@@ -134,30 +179,46 @@
     let category_id = null
     let size_id = null
     let vendor_id = null
+    let vendors=[]
     /**
      * Получение данных о продуктах, в соответствии с фильтром
      */
-    function getSearchProduct() {
+    async function getSearchProduct() {
         console.log(event.target)
         console.log(event.target.dataset.category_id)
 
-        fetch(
+        const response = await fetch(
             '/api/seach/?'
             + 'CategoryId=' + category_id
             + 'SizeId=' + size_id
-            + 'VendorId' + vendor_id.join('&')
-        )
-            .then(res => res.json())
-            .then(data => {
-                // console.log("get search product")
-                // console.log(data)
-                products = data
-                rowProduct(products)
-            })
-            .catch(err => {
-                renderError(err)
-            })
-
+            + 'VendorId' + vendor_id.join('&'), {
+            method: "GET",
+                headers: {
+                    "Accept": "application/json"
+                }
+                });
+        if (response.ok === true) {
+            const products = await response.json();
+            let rows = document.querySelector(".product");
+            products.forEach(product => {
+                // добавляем полученные элементы в таблицу
+                rows.append(rowProduct(product));
+            });
+        }
+    }
+    async function getVendors() {
+        fetch('/api/vendors',{
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        });
+        if (response.ok === true) {
+            const _vendors = await response.json();
+           
+            _vendors.forEach(vendor => {
+                vendors.map(vendor.name)
+            });
+        }
+        return vendors
     }
 
         getCategories()
