@@ -22,34 +22,34 @@
     @ViewData["Title"]
 </h1>
 <nav id="mainMenu" >
-    <form name="lstCategory">
+    <div id="lstCategory">
         <div class="form-group col-md-5">
-            @*<label for="name">List of categories:</label>*@
+            <label for="name">List of categories:</label>
             <table class="table table-condensed table-striped  col-md-6">
                 <thead><tr><th>    </th></tr></thead>
-                <tbody class="category">
+                <tbody id="category" class="category">
                 </tbody>
             </table>
         </div>
-    </form>
+    </div>
     <div id="filter" >
         <form method="get" action="~/Api/Seach">
             <h6>Seach by vendor</h6>
             <p>
-                <select class="vendor" id="vendor" name="vendor">
-                    <option value="">Choose vendor</option>
+                <select id="vendor" name="vendor">
+                    <option value=" ">Choose vendor</option>
                 </select>
-                @*@Html.DropDownList ("Vendor",new SelectList(getVendors()),"Choose vendor",)*@
+               
             </p>
             <h6>Seach by category</h6>
             <p>
                 <select id="category" name="category">
-                    <option value="getCategories()">Choose category</option>
+                    <option  value="">Choose category</option>
                 </select>
             </p>
             <h6>Seach by size</h6>
             <p>
-                <select id="category" name="category">
+                <select id="size" name="size">
                     <option value=" ">Choose size</option>
                 </select>
             </p>
@@ -62,11 +62,11 @@
 
 
 <div id="shopContent">
-    <form class="lstProducts">
+    <form class="lstProducts" enctype="multipart/form-data">
         <div class="form-group col-md-7">
             <table class="table table-condensed table-striped  col-md-8">
                 <thead><tr><th>Name</th><th>Price</th><th>Image</th></tr></thead>
-                <tbody class="product">
+                <tbody id="product" class="product">
                 </tbody>
             </table>
         </div>
@@ -80,45 +80,58 @@
     function renderError(err) {
         console.log(err)
     }
-    /*let lstCategory = document.getElementById("lstCategory")*/
-    async function getCategories() {
-        const response =  await fetch("/api/categories", {
-            method: "GET",
-            headers: { "Accept": "application/json" }
-        });//.then(response => { return response.json })
-        //        .then(data => {
-        //            renderCategories(data)
-        //        }).catch(err => {
-        //            console.log(err)
-        //})
+    let categories = []
+    let lstCategory = document.getElementById("lstCategory")
+    //async function getCategories() {
+    //    await fetch("/api/categories", {
+    //        method: "GET",
+    //        headers: { "Accept": "application/json" }
+    //    }).then(response => { return response.json })
+    //        .then(data => {
+    //            categories=data
+    //            renderCategories(
+    //            )
+    //        }).catch(err => {
+    //            console.log(err)
+    //        });
 
-        // если запрос прошел нормально
-        if (response.ok === true) {
-            // получаем данные
-            const categories = await response.json();
-            let rows = document.querySelector(".category");
-            categories.forEach(category => {
-                // добавляем полученные элементы в таблицу
-                rows.append(row(category));
+        //// если запрос прошел нормально
+        async function getCategories() {
+            const response =  await fetch("/api/categories", {
+                method: "GET",
+                headers: { "Accept": "application/json" }
             });
-        }
+            if (response.ok === true) {
+                // получаем данные
+                const categories = await response.json();
+                let rows = document.getElementById("category");
+                categories.forEach(category => {
+                    // добавляем полученные элементы в таблицу
+                    rows.append(row(category));
+                });
+            }
     }
     
-    //function renderCategories(categories) {
-    //    lstCategory.innerHTML = ""
-    //    categories.map(category => {
-    //        let li = document.createElement('li')
-    //        li.dataset.category_id = category.id
-    //        li.innerText = category.name
-    //        li.onclick = ()=> {
-    //            category_id = event.target.dataset.category_id
-    //            getSearchProduct()
-    //        }
+    let category_id = null
+    let size_id = null
+    let vendor_id = null
+    let vendors = []
+    
+    function renderCategories() {
+        lstCategory.innerHTML = ""
+        categories.map(category => {
+            let li = document.createElement('li')
+            li.dataset.category_id = category.id
+            li.innerText = category.name
+            li.onclick = ()=> {
+                category_id = event.target.dataset.category_id
+                getSearchProduct()
+            }
 
-    //        lstCategory.appendChild(li)
-    //    })
+            lstCategory.appendChild(li)
+        })
 
-    //}
+    }
     
         // создание строки для таблицы
         function row(category) {
@@ -153,7 +166,7 @@
             // получаем данные
             const products = await response.json();
             /*console.log(products)*/
-            let rows = document.querySelector(".product");
+            let rows = document.getElementById("product");
             products.forEach(product => {
                 // добавляем полученные элементы в таблицу
                 rows.append(rowProduct(product));
@@ -176,10 +189,7 @@
         return tr;
 
     }
-    let category_id = null
-    let size_id = null
-    let vendor_id = null
-    let vendors=[]
+    
     /**
      * Получение данных о продуктах, в соответствии с фильтром
      */
@@ -199,7 +209,7 @@
                 });
         if (response.ok === true) {
             const products = await response.json();
-            let rows = document.querySelector(".product");
+            let rows = document.getElementById("product");
             products.forEach(product => {
                 // добавляем полученные элементы в таблицу
                 rows.append(rowProduct(product));
@@ -213,12 +223,19 @@
         });
         if (response.ok === true) {
             const _vendors = await response.json();
-           
-            _vendors.forEach(vendor => {
-                vendors.map(vendor.name)
-            });
+            /*console.log(_vendors);*/
+            let select = document.getElementById("vendor");
+            this.innerHTML = '';
+        for ( i in _vendors)
+        {
+            //let option = document.createElement("option");
+            //option.text = i.name;
+            //option.value = i.name;
+            //select.appendChild(option);
+            select += '<option value="' + i.name + '">' + i.name + '</option>';
         }
-        return vendors
+ 
+        }
     }
 
         getCategories()
