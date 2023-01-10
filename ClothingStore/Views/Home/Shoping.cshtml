@@ -217,7 +217,7 @@
         }
     }
     async function getVendors() {
-        fetch('/api/vendors',{
+        fetch("/api/vendors",{
             method: "GET",
             headers: { "Accept": "application/json" }
         });
@@ -226,14 +226,14 @@
             /*console.log(_vendors);*/
             let select = document.getElementById("vendor");
             this.innerHTML = '';
-        for ( i in _vendors)
-        {
-            //let option = document.createElement("option");
-            //option.text = i.name;
-            //option.value = i.name;
-            //select.appendChild(option);
-            select += '<option value="' + i.name + '">' + i.name + '</option>';
-        }
+            _vendors.forEach(vendor => {
+                let option = document.createElement("option");
+                option.text = vendor.name;
+                option.value = vendor.name;
+                select.appendChild(option);
+                /*select += '<option value="' + i.name + '">' + i.name + '</option>';*/
+            })
+        
  
         }
     }
