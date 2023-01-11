@@ -39,20 +39,20 @@
         <h6>Seach by vendor</h6>
             <p>
                 <select id="vendor" name="vendor">
-                    <option value=" ">Choose vendor</option>
+                    <option >Choose vendor</option>
                 </select>
                
             </p>
             <h6>Seach by category</h6>
             <p>
                 <select id="category" name="category">
-                    <option  value=" ">Choose category</option>
+                    <option  >Choose category</option>
                 </select>
             </p>
             <h6>Seach by size</h6>
             <p>
                 <select id="size" name="size">
-                    <option value=" ">Choose size</option>
+                    <option >Choose size</option>
                 </select>
             </p>
             <input type="submit" id="btnConfirm"  value="Confirm" />
@@ -63,15 +63,10 @@
 
 
 <div id="shopContent">
-    <form class="lstProducts" enctype="multipart/form-data">
-        <div class="form-group col-md-7">
-            <table class="table table-condensed table-striped  col-md-8">
-                <thead><tr><th>Name</th><th>Price</th><th>Image</th></tr></thead>
-                <tbody id="product" class="product">
-                </tbody>
-            </table>
-        </div>
-    </form>
+   
+    <ul id="content">
+
+    </ul>
 </div>
 <script>
     /**
@@ -113,12 +108,13 @@
     //            });
     //        }
     //}
-    
+    let product_id=null
     let category_id = null
     let size_id = null
     let vendor_id = null
     let vendors = []
-    let sizes=[]
+    let sizes = []
+    let products = []
     let selectCategory = document.getElementById('category')
     function renderCategories() {
         selectCategory.innerHTML+='';
@@ -128,15 +124,20 @@
             option.innerText = category.name;
             option.value = category.name;
             selectCategory.appendChild(option);
-            option.onclick = () => {
-                category_id = event.target.dataset.category_id
-                getSearchProduct()
-            }
+            //option.onclick = () => {
+            //    category_id = event.target.dataset.category_id
+            //    getSearchProduct()
+           /* }*/
 
             
         });
     }
-    
+    let btnConfirm = document.getElementById('btnConfirm')
+    btnConfirm.addEventListener('click', function () {
+        if (select[select.selectedIndex].text != 'Choose vendor' || selectCategory.selectedIndex != 'Choose category' ||
+            selectSizes.text != 'Choose size')
+            getSearchProduct();
+    })
         // создание строки для таблицы
         //function row(category) {
 
@@ -155,40 +156,75 @@
         //}
     
     // Получение данных о продуктах без фильтра
-     
-    async function getProducts() { 
-        const response = await fetch('/api/products', {
+    async function getProducts() {
+        fetch('/api/products', {
             method: "GET",
             headers: { "Accept": "application/json" }
-        });
-        // если запрос прошел нормально
-        if (response.ok === true) {
-            // получаем данные
-            const products = await response.json();
-            /*console.log(products)*/
-            let rows = document.getElementById("product");
-            products.forEach(product => {
-                // добавляем полученные элементы в таблицу
-                rows.append(rowProduct(product));
-            });
-        }
+        }).then(res => { return res.json() })
+            .then(data => {
+                products = data;
+                renderProducts();
+            })
+            .catch(err => {
+                renderError(err)
+            })
     }
+    let content = document.getElementById('content')
+    function renderProducts() {
+        content.innerHTML += " ";
+        products.map(product => {  
+            let li = document.createElement('li');
+            li.dataset.product_id = product.id;
+            let h3 = document.createElement('h3');
+            h3.innerText = product.name;
+            let p = document.createElement('p');
+            p.innerText = product.price + "$";
+            let img = document.createElement('img');
+            img.src = product.img;
+            img.width = 200;
+            img.height = 200;
+            li.appendChild(h3);
+            li.appendChild(img);
+            li.appendChild(p);
+            content.appendChild(li);
+            console.log(product);
+        })
+        
+    }
+     
+    //async function getProducts() { 
+    //    const response = await fetch('/api/products', {
+    //        method: "GET",
+    //        headers: { "Accept": "application/json" }
+    //    });
+    //    // если запрос прошел нормально
+    //    if (response.ok === true) {
+    //        // получаем данные
+    //        const products = await response.json();
+    //        /*console.log(products)*/
+    //        let rows = document.getElementById("product");
+    //        products.forEach(product => {
+    //            // добавляем полученные элементы в таблицу
+    //            rows.append(rowProduct(product));
+    //        });
+    //    }
+    //}
     
-    function rowProduct(product) {
+    //function rowProduct(product) {
        
-        const tr = document.createElement("tr");
-        const nameTd = document.createElement("td");
-        nameTd.append(product.name);
-        tr.append(nameTd);
-        const priceTd = document.createElement("td");
-        priceTd.append(product.price);
-        tr.append(priceTd);
-        const imgTd = document.createElement("td");
-        imgTd.append(product.img);
-        tr.append(imgTd);
-        return tr;
+    //    const tr = document.createElement("tr");
+    //    const nameTd = document.createElement("td");
+    //    nameTd.append(product.name);
+    //    tr.append(nameTd);
+    //    const priceTd = document.createElement("td");
+    //    priceTd.append(product.price);
+    //    tr.append(priceTd);
+    //    const imgTd = document.createElement("td");
+    //    imgTd.append(product.img);
+    //    tr.append(imgTd);
+    //    return tr;
 
-    }
+    //}
     
     /**
      * Получение данных о продуктах, в соответствии с фильтром
