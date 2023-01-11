@@ -22,19 +22,21 @@
     @ViewData["Title"]
 </h1>
 <nav id="mainMenu" >
-    <div id="lstCategory">
-        <div class="form-group col-md-5">
+    <div >
+        <ul id="lstCategory">
+
+        </ul>
+        @*<div class="form-group col-md-5">
             <label for="name">List of categories:</label>
             <table class="table table-condensed table-striped  col-md-6">
                 <thead><tr><th>    </th></tr></thead>
                 <tbody id="category" class="category">
                 </tbody>
             </table>
-        </div>
+        </div>*@
     </div>
     <div id="filter" >
-        <form method="get" action="~/Api/Seach">
-            <h6>Seach by vendor</h6>
+        <h6>Seach by vendor</h6>
             <p>
                 <select id="vendor" name="vendor">
                     <option value=" ">Choose vendor</option>
@@ -44,7 +46,7 @@
             <h6>Seach by category</h6>
             <p>
                 <select id="category" name="category">
-                    <option  value="">Choose category</option>
+                    <option  value=" ">Choose category</option>
                 </select>
             </p>
             <h6>Seach by size</h6>
@@ -54,8 +56,7 @@
                 </select>
             </p>
             <input type="submit" id="btnConfirm"  value="Confirm" />
-        </form>
-        
+      
     </div>
 </nav>
     
@@ -73,7 +74,6 @@
     </form>
 </div>
 <script>
-
     /**
      * Отображение ошибки для пользователя
      */
@@ -81,78 +81,78 @@
         console.log(err)
     }
     let categories = []
-    let lstCategory = document.getElementById("lstCategory")
-    //async function getCategories() {
-    //    await fetch("/api/categories", {
-    //        method: "GET",
-    //        headers: { "Accept": "application/json" }
-    //    }).then(response => { return response.json })
-    //        .then(data => {
-    //            categories=data
-    //            renderCategories(
-    //            )
-    //        }).catch(err => {
-    //            console.log(err)
-    //        });
+    /*let lstCategory = document.getElementById("lstCategory")*/
+    async function getCategories() {
+        await fetch("/api/categories", {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        }).then(response => { return response.json() })
+            .then(data => {
+                categories = data;
+                renderCategories();
+            }).catch(err => {
+                console.log(err)
+            })
+    }
+
+           
 
         //// если запрос прошел нормально
-        async function getCategories() {
-            const response =  await fetch("/api/categories", {
-                method: "GET",
-                headers: { "Accept": "application/json" }
-            });
-            if (response.ok === true) {
-                // получаем данные
-                const categories = await response.json();
-                let rows = document.getElementById("category");
-                categories.forEach(category => {
-                    // добавляем полученные элементы в таблицу
-                    rows.append(row(category));
-                });
-            }
-    }
+    //    async function getCategories() {
+    //        const response =  await fetch("/api/categories", {
+    //            method: "GET",
+    //            headers: { "Accept": "application/json" }
+    //        });
+    //        if (response.ok === true) {
+    //            // получаем данные
+    //            const categories = await response.json();
+    //            let rows = document.getElementById("category");
+    //            categories.forEach(category => {
+    //                // добавляем полученные элементы в таблицу
+    //                rows.append(row(category));
+    //            });
+    //        }
+    //}
     
     let category_id = null
     let size_id = null
     let vendor_id = null
     let vendors = []
-    
+    let sizes=[]
+    let selectCategory = document.getElementById('category')
     function renderCategories() {
-        lstCategory.innerHTML = ""
+        selectCategory.innerHTML+='';
         categories.map(category => {
-            let li = document.createElement('li')
-            li.dataset.category_id = category.id
-            li.innerText = category.name
-            li.onclick = ()=> {
+            let option = document.createElement('option');
+            option.dataset.category_id = category.id;
+            option.innerText = category.name;
+            option.value = category.name;
+            selectCategory.appendChild(option);
+            option.onclick = () => {
                 category_id = event.target.dataset.category_id
                 getSearchProduct()
             }
 
-            lstCategory.appendChild(li)
-        })
-
+            
+        });
     }
     
         // создание строки для таблицы
-        function row(category) {
+        //function row(category) {
 
-            const tr = document.createElement("tr");
-            //tr.setAttribute("data-rowid", category.id);
+        //    const tr = document.createElement("tr");
+            
 
-            //const idTd = document.createElement("td");
-            //idTd.append(category.id);
-            //tr.append(idTd);
-
-            const nameTd = document.createElement("td");
-            nameTd.append(category.name);
-            tr.append(nameTd);
-            tr.onclick = () =>{
-                category_id = event.target.dataset.category_id
-                getSearchProduct();
-            }
+        //    const nameTd = document.createElement("td");
+        //    nameTd.append(category.name);
+        //    tr.append(nameTd);
+        //    tr.onclick = () =>{
+        //        category_id = event.target.dataset.category_id
+        //        getSearchProduct();
+        //    }
                 
-            return tr;
-        }
+        //    return tr;
+        //}
     
     // Получение данных о продуктах без фильтра
      
@@ -210,36 +210,64 @@
         if (response.ok === true) {
             const products = await response.json();
             let rows = document.getElementById("product");
+            rows.innerHTML += '';
             products.forEach(product => {
                 // добавляем полученные элементы в таблицу
                 rows.append(rowProduct(product));
             });
         }
     }
+    let select = document.getElementById('vendor');
     async function getVendors() {
         fetch("/api/vendors",{
             method: "GET",
             headers: { "Accept": "application/json" }
-        });
-        if (response.ok === true) {
-            const _vendors = await response.json();
-            /*console.log(_vendors);*/
-            let select = document.getElementById("vendor");
-            this.innerHTML = '';
-            _vendors.forEach(vendor => {
-                let option = document.createElement("option");
-                option.text = vendor.name;
-                option.value = vendor.name;
-                select.appendChild(option);
-                /*select += '<option value="' + i.name + '">' + i.name + '</option>';*/
-            })
-        
- 
+        }).then(res => { return res.json() }).then(data => {
+            vendors = data;
+            renderVendors();
+        }).catch(err => {
+            renderError(err)
+        })
+            
         }
+    function renderVendors() {
+        select.innerHTML += '';
+        vendors.map(vendor => {
+            let option = document.createElement('option');
+            option.dataset.vendor_id = vendor.id;
+            option.innerText = vendor.name;
+            option.value = vendor.name;
+            select.appendChild(option);
+        })
+        
     }
-
-        getCategories()
-        getProducts()
+    async function getSizes() {
+        await fetch('/api/sizes', {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        }).then(res => { return res.json() })
+            .then(data => {
+                sizes = data;
+                renderSizes()
+            }).catch(err => {
+                renderError(err)
+        })
+    }
+    let selectSizes = document.getElementById('size')
+    function renderSizes() {
+        selectSizes.innerHTML += '';
+        sizes.map(size => {
+            let option = document.createElement('option');
+            option.dataset.size_id = size.id;
+            option.innerText = size.name;
+            option.value = size.name;
+            selectSizes.appendChild(option);
+        })
+    }
+    getCategories();
+    getProducts();
+    getVendors();
+    getSizes();
 </script>
 
 

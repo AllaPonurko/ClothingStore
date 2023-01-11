@@ -24,21 +24,14 @@ namespace ClothingStore.Controllers.Api
         }
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetSearch(
-             // SearchRquest -> SearchParamPresenter 
+             
              int? CategoryId,
              int? SizeId,
              int? VendorId
              )
-        {// формируем список компаний для передачи в представление
-            //List<CategoryModel> categoryModels = _context.Categories
-            //    .Select(c => new CategoryModel { Id = c.Id, Name = c.Name })
-            //    .ToList();
-            //// добавляем на первое место
-            //categoryModels.Insert(0, new CategoryModel { Id = 0, Name = "Все" });
+        {
             var query = _context.Products.AsQueryable();
-            //IndexViewModel ivm = new IndexViewModel { Categories = categoryModels, Products = _context.Products.ToList() };
-
-            //// если передан id компании, фильтруем список
+            
             if (CategoryId != null)
                 query = query.Where(p => p.Category.Id == CategoryId);
 
