@@ -26,14 +26,7 @@
         <ul id="lstCategory">
 
         </ul>
-        @*<div class="form-group col-md-5">
-            <label for="name">List of categories:</label>
-            <table class="table table-condensed table-striped  col-md-6">
-                <thead><tr><th>    </th></tr></thead>
-                <tbody id="category" class="category">
-                </tbody>
-            </table>
-        </div>*@
+       
     </div>
     <div id="filter" >
         <h6>Seach by vendor</h6>
@@ -46,13 +39,13 @@
             <h6>Seach by category</h6>
             <p>
                 <select id="category" name="category">
-                    <option  >Choose category</option>
+                    <option>Choose category</option>
                 </select>
             </p>
             <h6>Seach by size</h6>
             <p>
                 <select id="size" name="size">
-                    <option >Choose size</option>
+                    <option>Choose size</option>
                 </select>
             </p>
             <input type="submit" id="btnConfirm"  value="Confirm" />
@@ -76,7 +69,6 @@
         console.log(err)
     }
     let categories = []
-    /*let lstCategory = document.getElementById("lstCategory")*/
     async function getCategories() {
         await fetch("/api/categories", {
             method: "GET",
@@ -134,10 +126,41 @@
     }
     let btnConfirm = document.getElementById('btnConfirm')
     btnConfirm.addEventListener('click', function () {
-        if (select[select.selectedIndex].text != 'Choose vendor' || selectCategory.selectedIndex != 'Choose category' ||
-            selectSizes.text != 'Choose size')
+        if (select[select.selectedIndex].text != 'Choose vendor' ||
+            selectCategory[selectCategory.selectedIndex].text != 'Choose category' ||
+            selectSizes[selectSizes.selectedIndex].text != 'Choose size')
+        {
+            vendor_id = select[select.selectedIndex].dataset.vendor_id;
+            size_id = selectSizes[selectSizes.selectedIndex].dataset.size_id;
+            category_id = select[select.selectedIndex].dataset.category_id;
             getSearchProduct();
+        }
+            
     })
+    /**
+     * Получение данных о продуктах, в соответствии с фильтром
+     */
+    async function getSearchProduct() {
+        //console.log(event.target)
+        //console.log(event.target.dataset.category_id)
+
+        await fetch(
+            '/api/seach/?'
+            + 'CategoryId=' + category_id
+            + 'SizeId=' + size_id
+            + 'VendorId' + vendor_id.join('&'), {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+
+        }).then(res => { return res.json() })
+            .then(data => {
+                products = data;
+                renderProducts();
+            })
+            .catch(err => {
+                renderError(err)
+            })
+    }
         // создание строки для таблицы
         //function row(category) {
 
@@ -175,15 +198,23 @@
         products.map(product => {  
             let li = document.createElement('li');
             li.dataset.product_id = product.id;
-            let h3 = document.createElement('h3');
-            h3.innerText = product.name;
+            let h4 = document.createElement('h4');
+            h4.innerText = product.name;
             let p = document.createElement('p');
             p.innerText = product.price + "$";
             let img = document.createElement('img');
             img.src = product.img;
             img.width = 200;
             img.height = 200;
-            li.appendChild(h3);
+            img.ondblclick = () => {
+                img.width = 200;
+                img.height = 200;}
+            img.alt = product.name;
+            img.onclick = () => {
+                img.width = 400;
+                img.height = 400;
+            }
+            li.appendChild(h4);
             li.appendChild(img);
             li.appendChild(p);
             content.appendChild(li);
@@ -191,7 +222,7 @@
         })
         
     }
-     
+    
     //async function getProducts() { 
     //    const response = await fetch('/api/products', {
     //        method: "GET",
@@ -226,33 +257,7 @@
 
     //}
     
-    /**
-     * Получение данных о продуктах, в соответствии с фильтром
-     */
-    async function getSearchProduct() {
-        console.log(event.target)
-        console.log(event.target.dataset.category_id)
-
-        const response = await fetch(
-            '/api/seach/?'
-            + 'CategoryId=' + category_id
-            + 'SizeId=' + size_id
-            + 'VendorId' + vendor_id.join('&'), {
-            method: "GET",
-                headers: {
-                    "Accept": "application/json"
-                }
-                });
-        if (response.ok === true) {
-            const products = await response.json();
-            let rows = document.getElementById("product");
-            rows.innerHTML += '';
-            products.forEach(product => {
-                // добавляем полученные элементы в таблицу
-                rows.append(rowProduct(product));
-            });
-        }
-    }
+    
     let select = document.getElementById('vendor');
     async function getVendors() {
         fetch("/api/vendors",{

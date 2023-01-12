@@ -35,8 +35,6 @@ namespace ClothingStore.Controllers.Api
             if (CategoryId != null)
                 query = query.Where(p => p.Category.Id == CategoryId);
 
-            // Service (SearchparamPresenter) -- Repository(SearchParamPresenter)
-
             if (SizeId != null)
             {
                 query = query.Where(p => p.Size.Id == SizeId);
@@ -45,7 +43,7 @@ namespace ClothingStore.Controllers.Api
             {
                 query = query.Where(p => p.Vendor.Id == VendorId);
             }
-            // Все другие фильтры продолжаем тут
+            
           return await query.ToListAsync();
  
         }
