@@ -71,6 +71,8 @@
     </ul>
 </div>
 <script>
+
+
     /**
      * Отображение ошибки для пользователя
      */
@@ -116,6 +118,9 @@
     let vendors = []
     let sizes = []
     let products = []
+    let product = null
+    let vendor = null
+    let size=null
     let selectCategory = document.getElementById('category')
     function renderCategories() {
         selectCategory.innerHTML+='';
@@ -163,6 +168,9 @@
         }
         
     })
+    /**
+     * Получение данных о продуктах, в соответствии с фильтром
+     */
     let btnSeachBySize = document.getElementById('btnSeachBySize')
     btnSeachBySize.addEventListener('click', function () {
         if ([...selectSizes.options].filter(option => option.selected)
@@ -200,6 +208,9 @@
                 renderError(err)
             })
     }
+    /**
+     * Получение данных о продуктах, в соответствии с фильтром
+     */
     async function getSearchProductByVendor() {
         console.log(event.target)
         console.log(event.target.dataset.vendor_id)
@@ -280,6 +291,8 @@
             li.dataset.product_id = product.id;
             let h5 = document.createElement('h5');
             h5.innerText = product.name;
+            product_id = product.id;
+            h5.onclick = () => { getProductById() };
             let p = document.createElement('p');
             p.innerText = product.price + "$";
             let img = document.createElement('img');
@@ -385,6 +398,83 @@
             selectSizes.appendChild(option);
         })
     }
+    async function getProductById() {
+        await fetch('/api/products/5/?' + 'ProductId=' + product_id, {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        }).then(res => { return res.json() })
+            .then(data => {
+                product = data;
+                detaleProduct();
+            })
+    }
+    function detaleProduct() {
+        content.innerHTML = " ";
+        let div = document.createElement('div');
+        div.dataset.product_id = product.id;
+        let h5 = document.createElement('h5');
+        h5.innerText = product.name;
+        vendor_id = product.vendorid;
+        let p1 = document.createElement('p');
+        p1.innerText = getVendorById();
+        let img = document.createElement('img');
+        img.src = product.img;
+        img.alt = product.name;
+        img.width = 500;
+        img.height = 500;
+        size_id = product.sizeid;
+        let p2 = document.createElement('p');
+        p2.innerText = 'Size' + ' ' + getSizeById();
+        let p3 = document.createElement('p');
+        p3.innerText = product.price + '$';
+        div.appendChild(h5);
+        div.appendChild(img);
+        div.appendChild(p1);
+        div.appendChild(p2);
+        div.appendChild(p3);
+        content.appendChild(div);
+        let input = document.createElement('input');
+        input.type = 'submit';
+        input.id = 'btnBuy';
+        input.value = 'Buy';
+        content.appendChild(input);
+        console.log(product);
+    }
+    //get vendor by id
+    async function getVendorById() {
+        let name = null;
+        await fetch('/api/vendors/5/?' + 'VendorId=' + vendor_id, {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        }).then(res => {
+            return res.json()
+        }).then(data => {
+            vendor = data;
+            name = vendor.name;
+            console.log(name);
+        }).catch(err => {
+            renderError(err)
+        })
+        return name;
+    }
+    //get size by id
+    async function getSizeById() {
+        let size_name = null;
+        await fetch('/api/sizes/5/?' + 'SizeId=' + size_id, {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+        }).then(res => {
+            return res.json()
+        }).then(data => {
+            size = data;
+            size_name = size.name;
+            console.log(size_name);
+        }).catch(err => {
+            renderError(err)
+        })
+        return size_name;
+    }
+
     getCategories();
     getProducts();
     getVendors();
