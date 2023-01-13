@@ -4,7 +4,7 @@
 <style>
     #mainMenu {
         width: 200px;
-        background-color: antiquewhite;
+        background-color: white;
         overflow: auto;
         float: left;
         height: 100%;
@@ -17,6 +17,13 @@
         overflow: auto;
         height: 100%;
     }
+    p{
+        font-size:20px;
+        color:blue;
+    }
+    h5{
+        color:darkblue;
+    }
 </style>
 <h1>
     @ViewData["Title"]
@@ -28,28 +35,30 @@
         </ul>
        
     </div>
-    <div id="filter" >
+    <div id="filter">
         <h6>Seach by vendor</h6>
-            <p>
-                <select id="vendor" name="vendor">
-                    <option >Choose vendor</option>
-                </select>
-               
-            </p>
-            <h6>Seach by category</h6>
-            <p>
-                <select id="category" name="category">
-                    <option>Choose category</option>
-                </select>
-            </p>
-            <h6>Seach by size</h6>
-            <p>
-                <select id="size" name="size">
-                    <option>Choose size</option>
-                </select>
-            </p>
-            <input type="submit" id="btnConfirm"  value="Confirm" />
-      
+        <p>
+            <select id="vendor" name="vendor">
+                <option>Choose vendor</option>
+            </select>
+
+        </p>
+        <input type="submit" id="btnSeachByVendor" value="Apply" />
+        <h6>Seach by category</h6>
+        <p>
+            <select id="category" name="category">
+                <option>Choose category</option>
+            </select>
+        </p>
+        <input type="submit" id="btnSeachByCategory" value="Apply" />
+        <h6>Seach by size</h6>
+        <p>
+            <select id="size" name="size">
+                <option>Choose size</option>
+            </select>
+        </p>
+        <input type="submit" id="btnSeachBySize" value="Apply" />
+
     </div>
 </nav>
     
@@ -116,43 +125,106 @@
             option.innerText = category.name;
             option.value = category.name;
             selectCategory.appendChild(option);
-            //option.onclick = () => {
-            //    category_id = event.target.dataset.category_id
-            //    getSearchProduct()
-           /* }*/
-
             
         });
     }
-    let btnConfirm = document.getElementById('btnConfirm')
-    btnConfirm.addEventListener('click', function () {
-        if (select[select.selectedIndex].text != 'Choose vendor' ||
-            selectCategory[selectCategory.selectedIndex].text != 'Choose category' ||
-            selectSizes[selectSizes.selectedIndex].text != 'Choose size')
+    let btnSeachByVendor = document.getElementById('btnSeachByVendor')
+    btnSeachByVendor.addEventListener('click', function () {
+        if ([...select.options].filter(option => option.selected)
+            .map(option => option.text) != 'Choose vendor')/* ||*/
+            //[...selectCategory.options].filter(option => option.selected)
+            //.map(option =>option.text) != 'Choose category' ||
+            //[...selectSizes.options].filter(option => option.selected)
+            //.map(option =>option.text) != 'Choose size')
         {
-            vendor_id = select[select.selectedIndex].dataset.vendor_id;
-            size_id = selectSizes[selectSizes.selectedIndex].dataset.size_id;
-            category_id = select[select.selectedIndex].dataset.category_id;
-            getSearchProduct();
+            vendor_id = [...select.options].filter(option => option.selected)
+                .map(option => option.dataset.vendor_id);
+            console.log(vendor_id);
+            //category_id = [...selectCategory.options].filter(option => option.selected)
+            //    .map(option => option.dataset.category_id);
+            
+            //size_id = [...selectSizes.options].filter(option => option.selected)
+            //    .map(option => option.dataset.size_id);
+            getSearchProductByVendor();
         }
             
     })
+    let btnSeachByCategory = document.getElementById('btnSeachByCategory')
+    btnSeachByCategory.addEventListener('click', function () {
+        if ([...selectCategory.options].filter(option => option.selected)
+            .map(option => option.text) != 'Choose category') {
+            category_id = [...selectCategory.options].filter(option => option.selected)
+                .map(option => option.dataset.category_id);
+            console.log(category_id);
+            getSearchProduct();
+        }
+        else return;
+    })
+    let btnSeachBySize = document.getElementById('btnSeachBySize')
+    btnSeachBySize.addEventListener('click', function () {
+        if ( [...selectSizes.options].filter(option => option.selected)
+        .map(option =>option.text) != 'Choose size')
+        {  
+            size_id = [...selectSizes.options].filter(option => option.selected)
+                .map(option => option.dataset.size_id);
+            console.log(size_id);
+            getSearchProductBySize();
+        }
+
+    })
+       
     /**
      * Получение данных о продуктах, в соответствии с фильтром
      */
     async function getSearchProduct() {
-        //console.log(event.target)
-        //console.log(event.target.dataset.category_id)
-
+        console.log(event.target)
+        console.log(event.target.dataset.category_id)
         await fetch(
             '/api/seach/?'
             + 'CategoryId=' + category_id
-            + 'SizeId=' + size_id
-            + 'VendorId' + vendor_id.join('&'), {
+            //+ 'SizeId=' + size_id
+            /*+ 'VendorId' + vendor_id.join('&')*/, {
             method: "GET",
             headers: { "Accept": "application/json" }
 
         }).then(res => { return res.json() })
+            .then(data => {
+                products = data;
+                renderProducts();
+            })
+            .catch(err => {
+                renderError(err)
+            })
+    }
+    async function getSearchProductByVendor() {
+        console.log(event.target)
+        console.log(event.target.dataset.vendor_id)
+        await fetch(
+            '/api/seach/?'            
+            + 'VendorId' + vendor_id, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+
+            }).then(res => { return res.json() })
+            .then(data => {
+                products = data;
+                renderProducts();
+            })
+            .catch(err => {
+                renderError(err)
+            })
+    }
+    async function getSearchProductBySize() {
+        console.log(event.target)
+        console.log(event.target.dataset.size_id)
+        await fetch(
+            '/api/seach/?'
+            + 'SizeId=' + size_id
+            /*+ 'VendorId' + vendor_id.join('&')*/, {
+                method: "GET",
+                headers: { "Accept": "application/json" }
+
+            }).then(res => { return res.json() })
             .then(data => {
                 products = data;
                 renderProducts();
@@ -194,12 +266,17 @@
     }
     let content = document.getElementById('content')
     function renderProducts() {
-        content.innerHTML += " ";
+        content.innerHTML = " ";
+        if (products.length === 0) {
+            const para = document.createElement('p');
+            para.textContent = 'No results to display!';
+            content.appendChild(para)
+        };
         products.map(product => {  
             let li = document.createElement('li');
             li.dataset.product_id = product.id;
-            let h4 = document.createElement('h4');
-            h4.innerText = product.name;
+            let h5 = document.createElement('h5');
+            h5.innerText = product.name;
             let p = document.createElement('p');
             p.innerText = product.price + "$";
             let img = document.createElement('img');
@@ -211,10 +288,10 @@
                 img.height = 200;}
             img.alt = product.name;
             img.onclick = () => {
-                img.width = 400;
-                img.height = 400;
+                img.width = 600;
+                img.height = 600;
             }
-            li.appendChild(h4);
+            li.appendChild(h5);
             li.appendChild(img);
             li.appendChild(p);
             content.appendChild(li);
