@@ -291,16 +291,17 @@
             li.dataset.product_id = product.id;
             let h5 = document.createElement('h5');
             h5.innerText = product.name;
-            product_id = product.id;
-            h5.onclick = () => { getProductById() };
+            product_id = li.dataset.product_id ;
+            console.log(product.name + ' ' + product_id);
+            
             let p = document.createElement('p');
             p.innerText = product.price + "$";
             let img = document.createElement('img');
             img.src = product.img;
             img.width = 200;
             img.height = 200;
-            img.ondblclick = () => {
-                img.width = 200;
+            img.ondblclick = () => 
+                {img.width = 200;
                 img.height = 200;}
             img.alt = product.name;
             img.onclick = () => {
