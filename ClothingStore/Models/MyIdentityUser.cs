@@ -9,9 +9,9 @@ namespace ClothingStore.Models
     public class MyIdentityUser:IdentityUser
     {
         public DateTime RegisterDate { get; set; }
-        public MyIdentityUser()
-        {
-            RegisterDate = DateTime.Now;
-        }
+        //public MyIdentityUser()
+        //{
+        //    RegisterDate = DateTime.Now;
+        //}
     }
 }

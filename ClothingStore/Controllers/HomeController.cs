@@ -1,5 +1,5 @@
 ﻿using ClothingStore.Models;
-using ClothingStore.ViewModel;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

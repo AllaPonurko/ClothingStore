@@ -1,7 +1,7 @@
 ﻿using ClothingStore.Data;
 using ClothingStore.Data.Migrations;
 using ClothingStore.Models;
-using ClothingStore.ViewModel;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
