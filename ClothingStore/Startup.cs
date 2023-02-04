@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ClothingStore.Auth;
+using ClothingStore.Models;
 
 namespace ClothingStore
 {

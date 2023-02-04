@@ -4,6 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>aspnet-ClothingStore-7EA86D7F-8554-4DDE-9D35-371A96192E88</UserSecretsId>
     <NoWin32Manifest>true</NoWin32Manifest>
+    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    <StartupObject>ClothingStore.Program</StartupObject>
+    <ApplicationIcon />
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +29,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Graph" Version="4.51.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Utils" Version="5.0.2" />
   </ItemGroup>

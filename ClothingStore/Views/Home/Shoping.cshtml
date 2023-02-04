@@ -58,7 +58,7 @@
             </select>
         </p>
         <input type="submit" id="btnSeachBySize" value="Apply" />
-
+        <p> <input type="submit" id="btnSeach" value="Apply to everything" /></p>
     </div>
 </nav>
     
@@ -80,8 +80,20 @@
         console.log(err)
     }
     let categories = []
-    async function getCategories() {
-        await fetch("/api/categories", {
+    let product_id = null
+    let category_id = null
+    let size_id = null
+    let vendor_id = null
+    let vendors = []
+    let sizes = []
+    let products = []
+    let product = null
+    let vendor = null
+    let size = null
+    let selectCategory = document.getElementById('category')
+    
+    function getCategories() {
+        fetch("/api/categories", {
             method: "GET",
             headers: { "Accept": "application/json" }
         }).then(response => { return response.json() })
@@ -92,8 +104,6 @@
                 console.log(err)
             })
     }
-
-           
 
         //// если запрос прошел нормально
     //    async function getCategories() {
@@ -111,17 +121,6 @@
     //            });
     //        }
     //}
-    let product_id=null
-    let category_id = null
-    let size_id = null
-    let vendor_id = null
-    let vendors = []
-    let sizes = []
-    let products = []
-    let product = null
-    let vendor = null
-    let size=null
-    let selectCategory = document.getElementById('category')
     function renderCategories() {
         selectCategory.innerHTML+='';
         categories.map(category => {
@@ -188,10 +187,10 @@
     /**
      * Получение данных о продуктах, в соответствии с фильтром
      */
-    async function getSearchProductByCategory() {
+    function getSearchProductByCategory() {
         console.log(event.target)
         console.log(event.target.dataset.category_id)
-        await fetch(
+         fetch(
             '/api/seach/?'
             + 'CategoryId=' + category_id
             //+ 'SizeId=' + size_id
@@ -211,10 +210,54 @@
     /**
      * Получение данных о продуктах, в соответствии с фильтром
      */
-    async function getSearchProductByVendor() {
+    //поиск продукта по всем фильтрам
+    function SeachProduct() {
+        fetch('/api/seach/?'
+            + 'CategoryId=' + category_id
+            + 'SizeId=' + size_id
+            + 'VendorId=' + vendor_id.join('&'), {
+            method: "GET",
+            headers: { "Accept": "application/json" }
+
+        }).then(res => {
+            return res.json()
+        }).then(data => {
+            products = data;
+            renderProducts();
+        })
+            .catch(err => {
+                renderError(err)
+            })
+    }
+    
+    let btnSeach = document.getElementById('btnSeach')
+    btnSeach.addEventListener('click', function () {
+        if ([...selectSizes.options].filter(option => option.selected)
+            .map(option => option.text) == 'Choose size' &
+            [...selectCategory.options].filter(option => option.selected)
+                .map(option => option.text) == 'Choose category' &
+            [...select.options].filter(option => option.selected)
+                    .map(option => option.text) == 'Choose vendor')return;
+        else {
+            
+            category_id = [...selectCategory.options].filter(option => option.selected)
+                .map(option => option.dataset.category_id);
+            size_id = [...selectSizes.options].filter(option => option.selected)
+                .map(option => option.dataset.size_id);
+            vendor_id = [...select.options].filter(option => option.selected)
+                .map(option => option.dataset.vendor_id);
+            console.log(size_id);
+            console.log(vendor_id);
+            console.log(category_id);
+            SeachProduct();
+        }
+
+    })
+    //поиск продукта по вендору
+    function getSearchProductByVendor() {
         console.log(event.target)
         console.log(event.target.dataset.vendor_id)
-        await fetch(
+        fetch(
             '/api/seach/?'            
             + 'VendorId=' + vendor_id, {
                 method: "GET",
@@ -229,10 +272,11 @@
                 renderError(err)
             })
     }
-    async function getSearchProductBySize() {
+    //поиск продукта по размеру
+   function getSearchProductBySize() {
         console.log(event.target)
         console.log(event.target.dataset.size_id)
-        await fetch(
+        fetch(
             '/api/seach/?'
             + 'SizeId=' + size_id, {
                 method: "GET",
@@ -247,26 +291,12 @@
                 renderError(err)
             })
     }
-        // создание строки для таблицы
-        //function row(category) {
-
-        //    const tr = document.createElement("tr");
-            
-
-        //    const nameTd = document.createElement("td");
-        //    nameTd.append(category.name);
-        //    tr.append(nameTd);
-        //    tr.onclick = () =>{
-        //        category_id = event.target.dataset.category_id
-        //        getSearchProduct();
-        //    }
-                
-        //    return tr;
-        //}
+        
     
     // Получение данных о продуктах без фильтра
-    async function getProducts() {
-        await fetch('/api/products', {
+    
+    function getProducts() {
+        fetch('/api/products', {
             method: "GET",
             headers: { "Accept": "application/json" }
         }).then(res => { return res.json() })
@@ -316,45 +346,10 @@
         })
         
     }
-    
-    //async function getProducts() { 
-    //    const response = await fetch('/api/products', {
-    //        method: "GET",
-    //        headers: { "Accept": "application/json" }
-    //    });
-    //    // если запрос прошел нормально
-    //    if (response.ok === true) {
-    //        // получаем данные
-    //        const products = await response.json();
-    //        /*console.log(products)*/
-    //        let rows = document.getElementById("product");
-    //        products.forEach(product => {
-    //            // добавляем полученные элементы в таблицу
-    //            rows.append(rowProduct(product));
-    //        });
-    //    }
-    //}
-    
-    //function rowProduct(product) {
-       
-    //    const tr = document.createElement("tr");
-    //    const nameTd = document.createElement("td");
-    //    nameTd.append(product.name);
-    //    tr.append(nameTd);
-    //    const priceTd = document.createElement("td");
-    //    priceTd.append(product.price);
-    //    tr.append(priceTd);
-    //    const imgTd = document.createElement("td");
-    //    imgTd.append(product.img);
-    //    tr.append(imgTd);
-    //    return tr;
-
-    //}
-    
-    
+    //получение списка вендоров
     let select = document.getElementById('vendor');
-    async function getVendors() {
-        await fetch("/api/vendors", {
+    function getVendors() {
+         fetch("/api/vendors", {
             method: "GET",
             headers: { "Accept": "application/json" }
         }).then(res => { return res.json() }).then(data => {
@@ -376,8 +371,9 @@
         })
         
     }
-    async function getSizes() {
-        await fetch('/api/sizes', {
+    //получение списка размеров
+    function getSizes() {
+        fetch('/api/sizes', {
             method: "GET",
             headers: { "Accept": "application/json" }
         }).then(res => { return res.json() })
@@ -399,8 +395,9 @@
             selectSizes.appendChild(option);
         })
     }
-    async function getProductById() {
-        await fetch('/api/products/5/?' + 'ProductId=' + product_id, {
+    //получение продукта по его Id
+    function getProductById() {
+        fetch('/api/products/5/?' + 'ProductId=' + product_id, {
             method: "GET",
             headers: { "Accept": "application/json" }
         }).then(res => { return res.json() })
@@ -442,9 +439,9 @@
         console.log(product);
     }
     //get vendor by id
-    async function getVendorById() {
+    function getVendorById() {
         let name = null;
-        await fetch('/api/vendors/5/?' + 'VendorId=' + vendor_id, {
+        fetch('/api/vendors/5/?' + 'VendorId=' + vendor_id, {
             method: "GET",
             headers: { "Accept": "application/json" }
         }).then(res => {

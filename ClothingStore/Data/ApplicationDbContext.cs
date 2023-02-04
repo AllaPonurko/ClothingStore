@@ -8,12 +8,10 @@ using System.Text;
 
 namespace ClothingStore.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<MyIdentityUser>
     {
         public DbSet<Product> Products { get; set; }
-        public DbSet<Category> Categories { get; set; }
-        
-        
+        public DbSet<Category> Categories { get; set; }   
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<Like> Likes { get; set; }
@@ -26,6 +24,6 @@ namespace ClothingStore.Data
             : base(options)
         {
         }
-        public DbSet<ClothingStore.Models.Textile> Textile { get; set; }
+        public DbSet<Textile> Textile { get; set; }
     }
 }
